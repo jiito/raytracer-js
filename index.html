@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+	<title>ray tracer</title>
+
+	<script src='raytracer.js'>
+
+	</script>
+
+	<!-- latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+	<!-- jQuery library -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js">
+
+	</script>
+
+	<!-- latest compiled JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js">
+
+	</script>
+
+	<!-- load MathJax for typesetting equations in LaTeX -->
+	<script>
+		MathJax = {
+    tex: {inlineMath: [['$', '$'], ['\\(', '\\)']]}
+  };
+	</script>
+	<script id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+
+	</script>
+
+	<!-- load gl-matrix: all functions and modules will be available in the mat2, mat3, mat4, vec2, vec3, vec4 namespaces -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js">
+
+	</script>
+
+	<!-- include any other scripts you write or mesh .js files here -->
+	<script src='AABB.js'>
+
+	</script>
+	<script src='Material.js'>
+
+	</script>
+	<script src='Hittable.js'>
+
+	</script>
+	<script src='Intersection.js'>
+
+	</script>
+	<script src='TriangleMesh.js'>
+
+	</script>
+	<script src='Camera.js'>
+
+	</script>
+	<script src='Sphere.js'>
+
+	</script>
+	<script src='raytracer.js'>
+
+	</script>
+	<script src='meshes/fox.js'>
+
+	</script>
+	<script src='meshes/truck.js'>
+
+	</script>
+</head>
+
+<body onload="run();">
+
+	<!-- wrapper -->
+	<div class="d-flex" id="wrapper">
+
+		<!-- page content -->
+		<div id="page-content-wrapper">
+
+			<!-- navigation bar -->
+			<nav class="navbar" style="background-color: #e3f2fd;">
+				<a class="navbar-brand" href="https://philipclaude.gitlab.io/cs461f21/index.html">
+					Middlebury College CSCI 461 - Computer Graphics</a>
+			</nav> <!-- navigation bar -->
+
+			<div class="container-fluid">
+				<h4>Project 3: Ray Tracer</h4>
+				name: <i>Ben Allan-rahill</i>
+
+        <br><br>
+        <center>
+          <canvas width=600 height=400 id='canvas-raytracer'></canvas>
+          <br>
+          <select id='select-background' onchange='setBackground();'>
+            <option value='daylight'>daylight</option>
+            <option value='white'>white</option>
+          </select>
+          <select id='select-checkpoint' onchange='runCheckpoint();'>
+            <option value='1'>checkpoint1</option>
+            <option value='2'>checkpoint2</option>
+            <option value='3'>checkpoint3</option>
+            <option value='4'>checkpoint4</option>
+            <option value='5'>my scene</option>
+            <option value='6'>truck</option>
+          </select>
+          <input id="spp" type="number" min="1" max="32" onchange="setSPP()">SPP</input>
+          <br>
+        </center>
+        <hr>
+
+        <h4>Description</h4>
+        <i>
+          Describe your ray tracer here.
+          This will include a discussion of any research you did to implement the features you chose. 
+          For example, how did you compute the background color from an image?
+          How did you texture your objects?
+          How did you calculate the intersection point for more complicated shapes?
+        </i>
+        <p>In my ray tracer, I attempted to implement BVH. To do this, I followed Peter Shirley's 'Ray Tracing: The Next Week' and translating his C++ code into my Javascript implementation. The BVH implementation works by calculating a bounding box for every object in the scene. In the checkpoint examples, the objects would be the spheres and with a triangle mesh, the objects are the individual triangles. These objects are the leaves of the bounding volume hierachy. To construct the entire hierachy, we compose each bounding box into higher-order bounding boxes. This constructs a tree like structure that can be used to traverse the objects in the scene much more quickly than our class implementation. </p>
+        <hr>
+        <h4>Results</h4>
+        <i>
+          Describe the scenes you set up and include sample images your ray tracer generates for these scenes.
+          You must include images that demonstrate the ability of your ray tracer to render images similar to the "checkpoint" images.
+          You should also include any images your ray tracer produces for the features you added.
+        </i>
+        <p>I set up the basic scenes described in the checkpoints. On top of that, I rendered a glass-fox, and a diffuse Tesla cybertruck (using BVH). </p>
+        <ul>
+          <li><h4>Checkpoint 1</h4><img src="checkpoints/checkpoint1.png" width="300"/><p>This scene is a very basic sphere with no material. With no material, no shading is done so all that is returned for each pixel is the background or the base color of the sphere.</p></li>
+          <li><h4>Checkpoint 2</h4><img width="300" src="checkpoints/checkpoint2.png"/><p>In this scene we iterate over multiple obects to render multiple spheres. For this scene we need to make sure that we are checking our t parameter value to make sure that it is within our <i>tmin</i> and <i>tmax</i>. We also need to make sure that we are returning the closest intersection point. </p></li>
+          <li><h4>Checkpoint 3</h4><img src="checkpoints/checkpoint3.png" width="300" /><p>In the third checkpoint, we added the Phong shading model. This uses the intersection point, the outward normal, and the direction to the light to calculate the diffuse and specular components of the color. This is then added to the ambient color that is returned by default. This Phong shading occurs only if there is nothing between the intersection point and the light. If there is an object blocking the ligtht, then we just return the ambient color. This gives us shadows.</p> </li>
+          <li><h4>Checkpoint 4</h4><img src="checkpoints/checkpoint4.png" width="300"/><p> In the final checkpoint, we added reflective and refractive materials. This implements recursive ray-tracing to determine what color should be rendered by a reflected or refracted ray. </li>
+          <li><h4>My Scene</h4><img src="checkpoints/cybertruck.png" width="300"/><p> For my scene, I implemented BVH to render a cybertruck with 10K triangles. The photo above is the truck at 1ssp, so there are a lot of jaggies.</li>
+
+        </ul>
+        <hr>
+      </div> <!-- container-fluid -->
+    </div> <!-- page-content-wrapper -->
+  </div> <!-- wrapper -->
+</body>
+
+<script>
+
+  let raytracer = undefined;
+  let checkpoint = 1;
+
+  function run() {
+    if (checkpoint === 1) checkpoint1();
+    else if (checkpoint === 2) checkpoint2();
+    else if (checkpoint === 3) checkpoint3();
+    else if (checkpoint === 4) checkpoint4();
+    else if (checkpoint === 5) myscene();
+    else if (checkpoint === 6) truck();
+    else alert('unknown checkpoint');
+  }
+
+  function setBackground() {
+    let spp = parseInt(document.getElementById('spp').value)
+    raytracer.sky = select.value;
+    raytracer.draw();
+  }
+
+  function setSPP(){
+    let spp = parseInt(document.getElementById('spp').value)
+    raytracer.spp = spp
+    raytracer.draw()
+  }
+
+  function runCheckpoint() {
+    let select = document.getElementById('select-checkpoint');
+    checkpoint = parseInt(select.value);
+    run();
+  }
+
+  function checkpoint1() {
+
+    // setup the ray tracer with the daylight background
+    raytracer = new RayTracer('canvas-raytracer');
+
+    // a red ball
+    let params = {
+      'center': vec3.fromValues(0,0,0) ,
+      'radius': 1.0 ,
+      'material': new Material({'color': vec3.fromValues(1,0,0)}) ,
+      
+    };
+    let sphere = new Sphere(params);
+    raytracer.objects.push(sphere);
+
+    // render the scene
+    raytracer.draw();
+  }
+
+  function checkpoint2() {
+
+    // setup the ray tracer with the daylight background
+    raytracer = new RayTracer('canvas-raytracer');
+
+    // a red ball at (1,1,0)
+    let params1 = {
+      'center': vec3.fromValues(1,1.0,0.0) ,
+      'radius': 1.0 ,
+      'material': undefined ,
+      'color': vec3.fromValues(1,0,0)
+    };
+    let sphere1 = new Sphere(params1);
+    raytracer.objects.push(sphere1);
+
+    // the ground (a really big sphere)
+    let params2 = {
+      'center': vec3.fromValues(0,-1000,0) ,
+      'radius': 1000.0 ,
+      'material': undefined ,
+      'color': vec3.fromValues(0.5,0.5,0.5)
+    };
+    let sphere2 = new Sphere(params2);
+    raytracer.objects.push(sphere2);
+
+    // a green ball at (-1,0.5,2)
+    let params3 = {
+      'center': vec3.fromValues(-1,0.5,2) ,
+      'radius': 0.5 ,
+      'material': undefined ,
+      'color': vec3.fromValues(0,1,0)
+    };
+    let sphere3 = new Sphere(params3);
+    raytracer.objects.push(sphere3);
+
+    // render the scene
+    raytracer.draw();
+  }
+
+  function checkpoint3() {
+
+    // setup the ray tracer with the daylight background
+    raytracer = new RayTracer('canvas-raytracer');
+
+    // a red ball shaded with the phong model (phong exponent = 32)
+    let params1 = {
+      'center': vec3.fromValues(1.0,1.0,-2) ,
+      'radius': 1.0 ,
+      'material': new Material({'type':'diffuse','color':[0.4,0,0],'shine':32}) ,
+      'name': 'red-ball'
+    };
+    let sphere1 = new Sphere(params1);
+    raytracer.objects.push(sphere1);
+
+    // a gray-colored ground, represented as a giant sphere
+    let params2 = {
+      'center': vec3.fromValues(0,-1000,0) ,
+      'radius': 1000.0 ,
+      'material': new Material({'type':'diffuse','color':[0.9,0.9,0.9]}) ,
+      'name': 'ground'
+    };
+    let sphere2 = new Sphere(params2);
+    raytracer.objects.push(sphere2);
+
+    // a mint-colored ball shaded with the phong model (phong exponent = 32)
+    let params3 = {
+      'center': vec3.fromValues(-1,0.5,2) ,
+      'radius': 0.5 ,
+      'material': new Material({'type':'diffuse','color':[0.07,0.98,0.53],'shine':32}) ,
+      'name': 'mint-ball'
+    };
+    let sphere3 = new Sphere(params3);
+    raytracer.objects.push(sphere3);
+
+    // a salmon-colored diffuse ball (no phong model)
+    let params4 = {
+      'center': vec3.fromValues(0,0.5,-5) ,
+      'radius': 0.5 ,
+      'material': new Material({'type':'diffuse','color':[0.98,0.5,0.44]}) ,
+      'name': 'salmon-ball'
+    };
+    let sphere4 = new Sphere(params4);
+    raytracer.objects.push(sphere4);
+
+    // add a white light
+    raytracer.lights.push( new Light({'location': vec3.fromValues(-10,5,0) } ) );
+
+    // render the scene
+    raytracer.draw();
+  }
+
+  function checkpoint4() {
+
+    // setup the ray tracer with the daylight background
+    raytracer = new RayTracer('canvas-raytracer');
+
+    // a metallic sphere with a red base color
+    let params1 = {
+      'center': vec3.fromValues(3.0,1.0,-4) ,
+      'radius': 1.0 ,
+      'material': new Material({'type':'reflective','color':[0.4,0,0],'shine':32}) ,
+      'name': 'red-ball'
+    };
+    let sphere1 = new Sphere(params1);
+    raytracer.objects.push(sphere1);
+
+    // a metallic ground with a gray base color
+    let params2 = {
+      'center': vec3.fromValues(0,-1000,0) ,
+      'radius': 1000.0 ,
+      'material': new Material({'type':'reflective','color':[0.9,0.9,0.9], "shine": 32}) ,
+      'name': 'ground'
+    };
+    let sphere2 = new Sphere(params2);
+    raytracer.objects.push(sphere2);
+
+    // a minty diffuse sphere
+    let params3 = {
+      'center': vec3.fromValues(-1,0.5,2) ,
+      'radius': 0.5 ,
+      'material': new Material({'type':'diffuse','color':[0.07,0.98,0.53]}) ,
+      'name': 'mint-ball'
+    };
+    let sphere3 = new Sphere(params3);
+    raytracer.objects.push(sphere3);
+
+    // a salmon-colored diffuse sphere
+    let params4 = {
+      'center': vec3.fromValues(0,0.5,-5) ,
+      'radius': 0.5 ,
+      'material': new Material({'type':'diffuse','color':[0.98,0.5,0.44]}) ,
+      'name': 'salmon-ball'
+    };
+    let sphere4 = new Sphere(params4);
+    raytracer.objects.push(sphere4);
+
+
+    let params5 = {
+      'center': vec3.fromValues(1,0.5,2) ,
+      'radius': 0.5 ,
+      'material': new Material({'type':'refractive','color':[1,1,1], 'eta': 1.3}),
+      'name': 'glass-ball'
+    };
+    let sphere5 = new Sphere(params5);
+    raytracer.objects.push(sphere5);
+
+
+    raytracer.doBVH = true
+    raytracer.rootBVHNode = new BVHNode(raytracer.objects, 0, raytracer.objects.length)
+
+    // add a white light
+    raytracer.lights.push( new Light({'location': vec3.fromValues(-10,5,0) } ) );
+
+    // render the scene
+    raytracer.draw();
+  }
+
+  function myscene() {
+    // setup the ray tracer with the daylight background
+    raytracer = new RayTracer('canvas-raytracer');
+
+    raytracer.doBVH  = true
+
+    let mesh = new TriangleMesh(mymesh, new Material({"type": "refractive", "color":[0.98,0.5,0.44], eta: 1.3}), [ 0.6743508577346802, 0.04515020549297333, 0.7370279431343079, 0, -0.06816361099481583,  0.9976705312728882, 0.0012503403704613447,  0,
+      -0.735257089138031,
+      -0.051081400364637375,
+      0.6758601069450378,
+      0,
+      0.14356625080108643,
+      0.014464646577835083,
+      0.12163142114877701,
+      1 ], )
+
+    raytracer.objects.push(mesh)
+    
+    // add a white light
+    raytracer.lights.push( new Light({'location': vec3.fromValues(-0.07164544612169266, 0.15180052816867828, 8.205160140991211) } ) );
+
+    // create the BVHNode
+    raytracer.rootBVHNode = new BVHNode(mesh.objects, 0, mesh.objects.length)
+
+    raytracer.draw()
+  }
+
+  function truck() {
+    raytracer = new RayTracer('canvas-raytracer');
+
+
+    raytracer.doBVH  = true
+
+    let mesh = new TriangleMesh(cyber, new Material({"type": "diffuse", "color":[0.98,0.5,0.44], }), [ 0.6743508577346802, 0.04515020549297333, 0.7370279431343079, 0, -0.06816361099481583,  0.9976705312728882, 0.0012503403704613447,  0,
+      -0.735257089138031,
+      -0.051081400364637375,
+      0.6758601069450378,
+      0,
+      0.14356625080108643,
+      0.014464646577835083,
+      0.12163142114877701,
+      1 ])
+
+    raytracer.objects.push(mesh)
+    
+    // add a white light
+    raytracer.lights.push( new Light({'location': vec3.fromValues(-0.07164544612169266, 0.15180052816867828, 8.205160140991211) } ) );
+
+    // create the BVHNode
+    raytracer.rootBVHNode = new BVHNode(mesh.objects, 0, mesh.objects.length)
+
+    raytracer.draw()
+
+  }
+</script>
+
+</html>
