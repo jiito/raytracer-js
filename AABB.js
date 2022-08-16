@@ -17,7 +17,7 @@ AABB.prototype.hit = function (ray, tmin, tmax) {
       this.max[d] - ray.x0[d] / ray.direction[d]
     );
 
-    t_min = math.min(t0, tmin);
+    t_min = Math.min(t0, tmin);
     t_max = Math.max(t1, tmax);
     if (t_max <= t_min) {
       return undefined;
